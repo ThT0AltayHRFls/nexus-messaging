@@ -76,11 +76,12 @@ jobs:
       - name: Patch build.gradle for release signing
         working-directory: artifacts/nexus-app/android
         run: |
-          python3 - << 'PYEOF'
-          with open('app/build.gradle', 'r') as f:
-              content = f.read()
+          node - << 'JSEOF'
+          const fs = require('fs');
+          let content = fs.readFileSync('app/build.gradle', 'utf8');
 
-          signing_block = """
+          // 1. Insert signingConfigs block right before buildTypes
+          const signingBlock = `
               signingConfigs {
                   release {
                       storeFile file(MYAPP_UPLOAD_STORE_FILE)
@@ -89,20 +90,38 @@ jobs:
                       keyPassword MYAPP_UPLOAD_KEY_PASSWORD
                   }
               }
-          """
+          `;
 
-          content = content.replace('    buildTypes {', signing_block + '    buildTypes {', 1)
-          content = content.replace(
-              'release {',
-              'release {\n            signingConfig signingConfigs.release',
-              1
-          )
+          // Find buildTypes position and insert before it
+          const buildTypesIdx = content.indexOf('    buildTypes {');
+          if (buildTypesIdx === -1) {
+            console.error('ERROR: Could not find buildTypes block');
+            process.exit(1);
+          }
+          content = content.slice(0, buildTypesIdx) + signingBlock + content.slice(buildTypesIdx);
 
-          with open('app/build.gradle', 'w') as f:
-              f.write(content)
+          // 2. Find release block INSIDE buildTypes (search after buildTypes position)
+          // After insertion, find buildTypes again
+          const buildTypesIdx2 = content.indexOf('    buildTypes {');
+          const releaseIdx = content.indexOf('        release {', buildTypesIdx2);
+          if (releaseIdx === -1) {
+            console.error('ERROR: Could not find release block inside buildTypes');
+            process.exit(1);
+          }
+          const insertAfter = releaseIdx + '        release {'.length;
+          content = content.slice(0, insertAfter) +
+            '\n            signingConfig signingConfigs.release' +
+            content.slice(insertAfter);
 
-          print("build.gradle patched successfully")
-          PYEOF
+          fs.writeFileSync('app/build.gradle', content);
+          console.log('build.gradle patched successfully');
+          JSEOF
+
+      - name: Show patched build.gradle signing section
+        working-directory: artifacts/nexus-app/android
+        run: |
+          grep -A 30 "signingConfigs" app/build.gradle || true
+          grep -A 20 "buildTypes" app/build.gradle || true
 
       - name: Set Gradle JVM args
         working-directory: artifacts/nexus-app/android
