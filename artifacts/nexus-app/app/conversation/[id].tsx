@@ -33,7 +33,7 @@ export default function ConversationScreen() {
   const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [isSending, setIsSending] = useState(false);
 
-  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const flatListRef = useRef<FlatList>(null);
 
   // Load initial data

@@ -73,7 +73,7 @@ export default function ProfileScreen() {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Set',
-          onPress: async (text) => {
+          onPress: async (text: string | undefined) => {
             if (text) {
               try {
                 const updated = await api.users.updateStatus({

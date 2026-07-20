@@ -74,7 +74,7 @@ export default function LoginScreen() {
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             >
-              <Ionicons name="hexagon" size={44} color="#FFF" />
+              <Ionicons name="diamond" size={44} color="#FFF" />
             </LinearGradient>
             <Text style={[styles.logoText, { color: colors.foreground }]}>Nexus</Text>
             <Text style={[styles.tagline, { color: colors.mutedForeground }]}>

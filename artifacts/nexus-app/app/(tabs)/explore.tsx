@@ -28,7 +28,7 @@ export default function ExploreScreen() {
   const loadGroups = async () => {
     try {
       const all = await api.conversations.list();
-      setMyGroups(all.filter((c) => c.type === 'group' || c.type === 'channel'));
+      setMyGroups((all as any[]).filter((c: any) => c.type === 'group' || c.type === 'channel'));
     } catch {}
     setIsLoading(false);
   };
