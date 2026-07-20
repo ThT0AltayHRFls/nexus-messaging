@@ -23,7 +23,12 @@
         "foregroundImage": "./assets/images/icon_2.png",
         "backgroundColor": "#0B0B14"
       },
-      "softwareKeyboardLayoutMode": "pan"
+      "softwareKeyboardLayoutMode": "pan",
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.VIBRATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED"
+      ]
     },
     "web": {
       "favicon": "./assets/images/icon_2.png"
@@ -41,6 +46,15 @@
         "expo-image-picker",
         {
           "photosPermission": "Allow Nexus to access your photos to send images."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon_2.png",
+          "color": "#7C3AED",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
         }
       ]
     ],

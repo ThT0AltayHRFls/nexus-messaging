@@ -8,7 +8,7 @@ on:
 jobs:
   build-android:
     runs-on: ubuntu-22.04
-    timeout-minutes: 90
+    timeout-minutes: 120
 
     steps:
       - name: Checkout code
@@ -19,10 +19,10 @@ jobs:
         with:
           version: 9
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'pnpm'
 
       - name: Install workspace dependencies
@@ -59,7 +59,8 @@ jobs:
           EXPO_NO_GIT_STATUS: '1'
           EXPO_NO_TELEMETRY: '1'
           CI: '1'
-        run: pnpm exec expo prebuild --platform android --clean
+          EXPO_PUBLIC_DOMAIN: 'localhost'
+        run: pnpm exec expo prebuild --platform android --clean --no-install
 
       - name: Copy keystore & configure signing
         working-directory: artifacts/nexus-app
@@ -90,10 +91,7 @@ jobs:
               }
           """
 
-          # Insert signingConfigs before buildTypes
           content = content.replace('    buildTypes {', signing_block + '    buildTypes {', 1)
-
-          # Add signingConfig to release buildType
           content = content.replace(
               'release {',
               'release {\n            signingConfig signingConfigs.release',
@@ -106,11 +104,19 @@ jobs:
           print("build.gradle patched successfully")
           PYEOF
 
+      - name: Set Gradle JVM args
+        working-directory: artifacts/nexus-app/android
+        run: |
+          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=512m" >> gradle.properties
+          echo "org.gradle.daemon=false" >> gradle.properties
+          echo "org.gradle.parallel=false" >> gradle.properties
+          echo "android.useAndroidX=true" >> gradle.properties
+
       - name: Build Release APK
         working-directory: artifacts/nexus-app/android
         env:
-          GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.parallel=false'
-        run: ./gradlew assembleRelease --no-daemon -q
+          GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4096m'
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
 
       - name: Rename APK
         run: |

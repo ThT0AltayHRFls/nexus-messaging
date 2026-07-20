@@ -69,9 +69,28 @@ export interface Video {
   thumbnailUrl?: string | null;
   duration?: number | null;
   likesCount: number;
+  dislikesCount: number;
   viewsCount: number;
   commentsCount: number;
   isLiked: boolean;
+  isDisliked: boolean;
+  createdAt: string;
+}
+
+export interface VideoComment {
+  id: number;
+  videoId: number;
+  userId: number;
+  userName: string;
+  userAvatar?: string | null;
+  content: string;
+  likesCount: number;
+  dislikesCount: number;
+  heartCount: number;
+  isPinned: boolean;
+  isLiked: boolean;
+  isDisliked: boolean;
+  isHearted: boolean;
   createdAt: string;
 }
 
@@ -92,4 +111,14 @@ export interface StoryGroup {
   userAvatar?: string | null;
   stories: Story[];
   hasUnviewed: boolean;
+}
+
+export interface AppNotification {
+  id: string;
+  type: 'message' | 'video_like' | 'comment_heart' | 'new_video' | 'follow' | 'comment_like' | 'many_hearts';
+  title: string;
+  body: string;
+  data?: Record<string, any>;
+  read: boolean;
+  createdAt: string;
 }

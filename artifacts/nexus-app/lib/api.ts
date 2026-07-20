@@ -113,14 +113,39 @@ export const api = {
     unsubscribe: (id: number) => request('DELETE', `/api/channels/${id}/subscribe`),
   },
   feed: {
-    videos: (page = 0) => request('GET', `/api/feed/videos?page=${page}`),
+    videos: (page = 0, type?: 'short' | 'long') =>
+      request('GET', `/api/feed/videos?page=${page}${type ? `&type=${type}` : ''}`),
+    myVideos: () => request('GET', '/api/feed/my-videos'),
     like: (id: number) => request('POST', `/api/feed/videos/${id}/like`),
     unlike: (id: number) => request('DELETE', `/api/feed/videos/${id}/like`),
+    dislike: (id: number) => request('POST', `/api/feed/videos/${id}/dislike`),
+    undislike: (id: number) => request('DELETE', `/api/feed/videos/${id}/dislike`),
+    comments: (videoId: number, page = 0) =>
+      request('GET', `/api/feed/videos/${videoId}/comments?page=${page}`),
+    postComment: (videoId: number, content: string) =>
+      request('POST', `/api/feed/videos/${videoId}/comments`, { content }),
+    deleteComment: (videoId: number, commentId: number) =>
+      request('DELETE', `/api/feed/videos/${videoId}/comments/${commentId}`),
+    likeComment: (videoId: number, commentId: number) =>
+      request('POST', `/api/feed/videos/${videoId}/comments/${commentId}/like`),
+    dislikeComment: (videoId: number, commentId: number) =>
+      request('POST', `/api/feed/videos/${videoId}/comments/${commentId}/dislike`),
+    heartComment: (videoId: number, commentId: number) =>
+      request('POST', `/api/feed/videos/${videoId}/comments/${commentId}/heart`),
+    pinComment: (videoId: number, commentId: number) =>
+      request('POST', `/api/feed/videos/${videoId}/comments/${commentId}/pin`),
+    blockUser: (userId: number) => request('POST', `/api/users/${userId}/block`),
   },
   stories: {
     list: () => request('GET', '/api/stories'),
     create: (data: { contentUrl: string; contentType?: string; text?: string }) =>
       request('POST', '/api/stories', data),
+  },
+  notifications: {
+    list: () => request('GET', '/api/notifications'),
+    markRead: () => request('PUT', '/api/notifications/read'),
+    registerToken: (token: string, platform?: string) =>
+      request('POST', '/api/notifications/token', { token, platform }).catch(() => null),
   },
   upload: {
     file: async (uri: string, type: string, name: string): Promise<{ url: string; type: string; size: number; name: string }> => {
