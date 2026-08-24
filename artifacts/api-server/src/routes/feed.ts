@@ -3,6 +3,7 @@ import { db } from "@workspace/db";
 import { videosTable, videoLikesTable, usersTable } from "@workspace/db";
 import { eq, and, desc, sql } from "drizzle-orm";
 import { requireAuth } from "../lib/auth.js";
+import { getRouteParamInt } from "../lib/params.js";
 
 const router = Router();
 
@@ -100,7 +101,7 @@ router.post("/feed/videos", requireAuth, async (req, res) => {
 router.post("/feed/videos/:id/like", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const videoId = parseInt(req.params.id);
+    const videoId = getRouteParamInt(req, "id");
 
     await db
       .insert(videoLikesTable)
@@ -122,7 +123,7 @@ router.post("/feed/videos/:id/like", requireAuth, async (req, res) => {
 router.delete("/feed/videos/:id/like", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const videoId = parseInt(req.params.id);
+    const videoId = getRouteParamInt(req, "id");
 
     await db
       .delete(videoLikesTable)

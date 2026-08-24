@@ -3,8 +3,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const TOKEN_KEY = '@nexus/token';
 
 export function getBaseUrl(): string {
+  const configuredApiUrl = process.env.EXPO_PUBLIC_API_URL?.trim();
+  if (configuredApiUrl) return configuredApiUrl.replace(/\/+$/, '');
+
   const domain = process.env.EXPO_PUBLIC_DOMAIN;
-  if (domain) return `https://${domain}`;
+  if (domain) {
+    const normalizedDomain = domain.trim().replace(/\/+$/, '');
+    return /^https?:\/\//i.test(normalizedDomain)
+      ? normalizedDomain
+      : `https://${normalizedDomain}`;
+  }
+
   return 'http://localhost:5000';
 }
 

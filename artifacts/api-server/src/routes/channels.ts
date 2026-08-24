@@ -7,6 +7,7 @@ import {
 } from "@workspace/db";
 import { eq, and, like, sql } from "drizzle-orm";
 import { requireAuth } from "../lib/auth.js";
+import { getRouteParamInt } from "../lib/params.js";
 
 const router = Router();
 
@@ -56,7 +57,7 @@ router.get("/channels/search", requireAuth, async (req, res) => {
 router.post("/channels/:id/subscribe", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const channelId = parseInt(req.params.id);
+    const channelId = getRouteParamInt(req, "id");
 
     await db
       .insert(conversationMembersTable)
@@ -73,7 +74,7 @@ router.post("/channels/:id/subscribe", requireAuth, async (req, res) => {
 router.delete("/channels/:id/subscribe", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const channelId = parseInt(req.params.id);
+    const channelId = getRouteParamInt(req, "id");
 
     await db
       .delete(conversationMembersTable)

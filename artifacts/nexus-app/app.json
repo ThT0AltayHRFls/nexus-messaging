@@ -19,6 +19,7 @@
     },
     "android": {
       "package": "com.altayhr.nexus",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon_2.png",
         "backgroundColor": "#0B0B14"

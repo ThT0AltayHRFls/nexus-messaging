@@ -7,6 +7,7 @@ import {
 } from "@workspace/db";
 import { eq, and, like, ne } from "drizzle-orm";
 import { requireAuth } from "../lib/auth.js";
+import { getRouteParamInt } from "../lib/params.js";
 
 const router = Router();
 
@@ -48,7 +49,7 @@ router.get("/users/search", requireAuth, async (req, res) => {
 // Get user by ID
 router.get("/users/:userId", requireAuth, async (req, res) => {
   try {
-    const targetId = parseInt(req.params.userId);
+    const targetId = getRouteParamInt(req, "userId");
     const [user] = await db
       .select({
         id: usersTable.id,
@@ -133,7 +134,7 @@ router.put("/users/me/status", requireAuth, async (req, res) => {
 router.post("/users/:userId/block", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const blockedUserId = parseInt(req.params.userId);
+    const blockedUserId = getRouteParamInt(req, "userId");
 
     await db
       .insert(blockedUsersTable)
@@ -150,7 +151,7 @@ router.post("/users/:userId/block", requireAuth, async (req, res) => {
 router.delete("/users/:userId/block", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const blockedUserId = parseInt(req.params.userId);
+    const blockedUserId = getRouteParamInt(req, "userId");
 
     await db
       .delete(blockedUsersTable)
@@ -171,7 +172,7 @@ router.delete("/users/:userId/block", requireAuth, async (req, res) => {
 router.post("/contacts/:userId", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const contactUserId = parseInt(req.params.userId);
+    const contactUserId = getRouteParamInt(req, "userId");
 
     await db
       .insert(contactsTable)

@@ -67,6 +67,10 @@ function RootLayoutNav() {
         name="new-conversation"
         options={{ headerShown: false, animation: 'slide_from_bottom' }}
       />
+      <Stack.Screen
+        name="about"
+        options={{ headerShown: false, animation: 'slide_from_right' }}
+      />
     </Stack>
   );
 }

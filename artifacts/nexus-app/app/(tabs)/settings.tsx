@@ -162,6 +162,11 @@ export default function SettingsScreen() {
           onPress: () => Alert.alert('Nexus v1.0.0', 'Built by AltayHR'),
         },
         {
+          icon: 'sparkles-outline',
+          label: 'About Nexus',
+          onPress: () => router.push('/about' as any),
+        },
+        {
           icon: 'code-outline',
           label: 'Developer',
           onPress: () => Alert.alert('Developer', 'AltayHR'),

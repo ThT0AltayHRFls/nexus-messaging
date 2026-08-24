@@ -9,6 +9,7 @@ import {
 } from "@workspace/db";
 import { eq, and, desc, lt, inArray, sql } from "drizzle-orm";
 import { requireAuth } from "../lib/auth.js";
+import { getRouteParamInt } from "../lib/params.js";
 import { getIo } from "../socket.js";
 
 const router = Router();
@@ -228,7 +229,7 @@ router.post("/conversations", requireAuth, async (req, res) => {
 router.get("/conversations/:id", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const convId = parseInt(req.params.id);
+    const convId = getRouteParamInt(req, "id");
 
     const [conv] = await db
       .select()
@@ -298,7 +299,7 @@ router.get("/conversations/:id", requireAuth, async (req, res) => {
 router.put("/conversations/:id", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const convId = parseInt(req.params.id);
+    const convId = getRouteParamInt(req, "id");
 
     const [member] = await db
       .select()
@@ -341,7 +342,7 @@ router.put("/conversations/:id", requireAuth, async (req, res) => {
 router.get("/conversations/:id/messages", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const convId = parseInt(req.params.id);
+    const convId = getRouteParamInt(req, "id");
     const before = req.query.before ? parseInt(req.query.before as string) : undefined;
     const limit = Math.min(parseInt((req.query.limit as string) || "50"), 100);
 
@@ -406,7 +407,7 @@ router.get("/conversations/:id/messages", requireAuth, async (req, res) => {
 router.post("/conversations/:id/messages", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const convId = parseInt(req.params.id);
+    const convId = getRouteParamInt(req, "id");
     const {
       content,
       type = "text",
@@ -469,7 +470,7 @@ router.post("/conversations/:id/messages", requireAuth, async (req, res) => {
 router.put("/conversations/:id/messages/:messageId", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const messageId = parseInt(req.params.messageId);
+    const messageId = getRouteParamInt(req, "messageId");
     const { content } = req.body;
 
     const [msg] = await db
@@ -502,7 +503,7 @@ router.put("/conversations/:id/messages/:messageId", requireAuth, async (req, re
 router.delete("/conversations/:id/messages/:messageId", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const messageId = parseInt(req.params.messageId);
+    const messageId = getRouteParamInt(req, "messageId");
 
     const [msg] = await db
       .select()
@@ -535,8 +536,8 @@ router.delete("/conversations/:id/messages/:messageId", requireAuth, async (req,
 router.post("/conversations/:id/messages/:messageId/reactions", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId as number;
-    const messageId = parseInt(req.params.messageId);
-    const convId = parseInt(req.params.id);
+    const messageId = getRouteParamInt(req, "messageId");
+    const convId = getRouteParamInt(req, "id");
     const { emoji } = req.body;
 
     if (!emoji) {
@@ -562,7 +563,7 @@ router.post("/conversations/:id/messages/:messageId/reactions", requireAuth, asy
 // Get members
 router.get("/conversations/:id/members", requireAuth, async (req, res) => {
   try {
-    const convId = parseInt(req.params.id);
+    const convId = getRouteParamInt(req, "id");
 
     const members = await db
       .select({
@@ -606,7 +607,7 @@ router.get("/conversations/:id/members", requireAuth, async (req, res) => {
 // Add member
 router.post("/conversations/:id/members", requireAuth, async (req, res) => {
   try {
-    const convId = parseInt(req.params.id);
+    const convId = getRouteParamInt(req, "id");
     const { userId: newUserId } = req.body;
 
     const [member] = await db
@@ -623,8 +624,8 @@ router.post("/conversations/:id/members", requireAuth, async (req, res) => {
 // Remove member
 router.delete("/conversations/:id/members/:userId", requireAuth, async (req, res) => {
   try {
-    const convId = parseInt(req.params.id);
-    const targetUserId = parseInt(req.params.userId);
+    const convId = getRouteParamInt(req, "id");
+    const targetUserId = getRouteParamInt(req, "userId");
 
     await db
       .delete(conversationMembersTable)
