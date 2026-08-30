@@ -33,7 +33,6 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA"
       ],
-      "newArchEnabled": false,
       "minSdkVersion": 24
     },
     "web": {
