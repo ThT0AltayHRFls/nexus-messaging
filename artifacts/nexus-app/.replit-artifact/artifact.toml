@@ -1,0 +1,24 @@
+kind = "mobile"
+previewPath = "/nexus-app/"
+title = "Nexus Premium"
+description = "Supabase tabanlı premium mesajlaşma uygulaması; birebir sohbet, topluluklar, bildirimler, profil ve gelişmiş ayarlarla Android için hazırlanıyor."
+version = "1.0.0"
+id = "artifacts/nexus-app"
+router = "expo-domain"
+
+[[services]]
+name = "expo"
+ensurePreviewReachable = "/status"
+paths = [ "/nexus-app/" ]
+localPort = 22626
+
+[services.development]
+run = "pnpm --filter @workspace/nexus-app run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/nexus-app", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/nexus-app", "run", "serve" ]
+
+[services.env]
+PORT = "22626"
+BASE_PATH = "/nexus-app/"

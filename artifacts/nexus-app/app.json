@@ -1,0 +1,72 @@
+{
+  "expo": {
+    "name": "Nexus Premium",
+    "slug": "nexus-app",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon_2.png",
+    "scheme": "nexus",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/icon_2.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B0B14"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.altayhr.nexus",
+      "newArchEnabled": false
+    },
+    "android": {
+      "package": "com.altayhr.nexus",
+      "versionCode": 4,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon_2.png",
+        "backgroundColor": "#0B0B14"
+      },
+      "softwareKeyboardLayoutMode": "pan",
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.VIBRATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA"
+      ],
+      "newArchEnabled": false,
+      "minSdkVersion": 24
+    },
+    "web": {
+      "favicon": "./assets/images/icon_2.png"
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://replit.com/"
+        }
+      ],
+      "expo-font",
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Nexus to access your photos to send images."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon_2.png",
+          "color": "#7C3AED",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": false
+    }
+  }
+}
