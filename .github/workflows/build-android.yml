@@ -24,7 +24,7 @@ jobs:
     env:
       # Set NEXUS_SUPABASE_URL under repository variables. The value is used
       # as the public API base URL at build time and is never hardcoded.
-      EXPO_PUBLIC_API_URL: ${{ vars.NEXUS_SUPABASE_URL }}
+      EXPO_PUBLIC_API_URL: ${{ inputs.api_url || vars.NEXUS_SUPABASE_URL }}
 
     steps:
       - name: Validate release configuration
