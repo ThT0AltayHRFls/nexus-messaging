@@ -84,7 +84,7 @@ export default function LoginScreen() {
 
           {/* Form */}
           <View style={styles.form}>
-            <Text style={[styles.label, { color: colors.mutedForeground }]}>USERNAME</Text>
+            <Text style={[styles.label, { color: colors.mutedForeground }]}>EMAIL</Text>
             <View
               style={[
                 styles.inputWrapper,
@@ -98,12 +98,13 @@ export default function LoginScreen() {
               <Ionicons name="at" size={18} color={colors.mutedForeground} style={styles.inputIcon} />
               <TextInput
                 style={[styles.input, { color: colors.foreground }]}
-                placeholder="Enter your username"
+                placeholder="you@example.com"
                 placeholderTextColor={colors.mutedForeground}
                 value={username}
                 onChangeText={setUsername}
                 autoCapitalize="none"
                 autoCorrect={false}
+                keyboardType="email-address"
               />
             </View>
 

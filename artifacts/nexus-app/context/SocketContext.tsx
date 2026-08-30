@@ -200,6 +200,60 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       });
     });
 
+    // Call invitations
+    socket.on('call-invite', (data: {
+      callId: string;
+      type: 'voice' | 'video';
+      fromName: string;
+      from: number;
+      conversationId: number;
+    }) => {
+      if (data.from === user?.id) return;
+      scheduleLocalNotification({
+        title: `${data.fromName} sizi ${data.type === 'voice' ? 'arayıyor' : 'görüntülü arama yapıyor'}...`,
+        body: data.type === 'voice' ? '📞 Sesli arama' : '📹 Görüntülü arama',
+        data: {
+          type: 'call',
+          callType: data.type,
+          callId: data.callId,
+          conversationId: data.conversationId,
+          from: data.from,
+        },
+        channelId: 'default',
+      });
+    });
+
+    // Call accepted
+    socket.on('call-accepted', (data: {
+      callId: string;
+      conversationId: number;
+    }) => {
+      scheduleLocalNotification({
+        title: 'Arama başlandı',
+        body: 'Arama bağlantısı kuruldu',
+        data: {
+          type: 'call_accepted',
+          callId: data.callId,
+          conversationId: data.conversationId,
+        },
+      });
+    });
+
+    // Call rejected
+    socket.on('call-rejected', (data: {
+      callId: string;
+      reason?: string;
+    }) => {
+      scheduleLocalNotification({
+        title: 'Arama reddedildi',
+        body: data.reason || 'Çağrı alıcı tarafından reddedildi',
+        data: {
+          type: 'call_rejected',
+          callId: data.callId,
+        },
+      });
+    });
+
     socketRef.current = socket;
 
     return () => {

@@ -116,12 +116,13 @@ export default function RegisterScreen() {
                 autoCapitalize: 'words' as const,
               },
               {
-                label: 'USERNAME',
+                label: 'EMAIL',
                 icon: 'at',
                 value: username,
                 onChange: setUsername,
-                placeholder: 'Choose a username',
+                placeholder: 'you@example.com',
                 autoCapitalize: 'none' as const,
+                keyboardType: 'email-address' as const,
               },
             ].map((field) => (
               <View key={field.label} style={styles.fieldGroup}>

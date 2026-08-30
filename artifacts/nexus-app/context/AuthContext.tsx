@@ -1,110 +1,132 @@
 import React, {
   createContext,
-  useContext,
-  useState,
-  useEffect,
   useCallback,
-  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
 } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { api, setToken, removeToken } from '@/lib/api';
+import type { Session, User as SupabaseUser } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase-premium';
 import type { User } from '@/lib/types';
-
-const TOKEN_KEY = '@nexus/token';
-const USER_KEY = '@nexus/user';
 
 interface AuthContextValue {
   user: User | null;
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<void>;
-  register: (username: string, password: string, displayName: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, displayName: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function mapUser(authUser: SupabaseUser): User {
+  const metadata = authUser.user_metadata ?? {};
+  return {
+    id: (metadata.user_id ?? authUser.id) as unknown as number,
+    username: String(
+      metadata.username ?? authUser.email?.split('@')[0] ?? 'nexus-user',
+    ),
+    displayName: String(
+      metadata.display_name ?? metadata.username ?? authUser.email ?? 'Nexus User',
+    ),
+    bio: metadata.bio ?? null,
+    avatarUrl: metadata.avatar_url ?? null,
+    createdAt: authUser.created_at,
+  };
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setTokenState] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const applySession = useCallback((session: Session | null) => {
+    setToken(session?.access_token ?? null);
+    setUser(session?.user ? mapUser(session.user) : null);
+  }, []);
+
   useEffect(() => {
-    loadStoredAuth();
-  }, []);
+    let mounted = true;
 
-  const loadStoredAuth = async () => {
-    try {
-      const [storedToken, storedUser] = await Promise.all([
-        AsyncStorage.getItem(TOKEN_KEY),
-        AsyncStorage.getItem(USER_KEY),
-      ]);
+    const hydrateSession = async () => {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
 
-      if (storedToken && storedUser) {
-        setTokenState(storedToken);
-        setUser(JSON.parse(storedUser));
-        await setToken(storedToken);
-
-        // Validate token in background
-        try {
-          const freshUser = await api.auth.me();
-          setUser(freshUser);
-          await AsyncStorage.setItem(USER_KEY, JSON.stringify(freshUser));
-        } catch {
-          // Token expired
-          await clearAuth();
-        }
+      if (!mounted) return;
+      if (error) {
+        applySession(null);
+      } else {
+        applySession(session);
       }
-    } catch {
-      await clearAuth();
-    } finally {
       setIsLoading(false);
-    }
-  };
+    };
 
-  const clearAuth = async () => {
-    setUser(null);
-    setTokenState(null);
-    await removeToken();
-    await AsyncStorage.multiRemove([TOKEN_KEY, USER_KEY]);
-  };
+    void hydrateSession();
 
-  const login = useCallback(async (username: string, password: string) => {
-    const { user: loggedUser, token: newToken } = await api.auth.login({
-      username,
-      password,
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (mounted) applySession(session);
     });
-    await setToken(newToken);
-    await AsyncStorage.setItem(TOKEN_KEY, newToken);
-    await AsyncStorage.setItem(USER_KEY, JSON.stringify(loggedUser));
-    setTokenState(newToken);
-    setUser(loggedUser);
-  }, []);
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [applySession]);
+
+  const login = useCallback(
+    async (email: string, password: string) => {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (error) throw error;
+      if (!data.session || !data.user) {
+        throw new Error('Oturum açılamadı. E-posta doğrulamasını tamamlayın.');
+      }
+      applySession(data.session);
+    },
+    [applySession],
+  );
 
   const register = useCallback(
-    async (username: string, password: string, displayName: string) => {
-      const { user: newUser, token: newToken } = await api.auth.register({
-        username,
+    async (email: string, password: string, displayName: string) => {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
         password,
-        displayName,
+        options: {
+          data: {
+            display_name: displayName.trim(),
+            username: email.trim().split('@')[0],
+          },
+        },
       });
-      await setToken(newToken);
-      await AsyncStorage.setItem(TOKEN_KEY, newToken);
-      await AsyncStorage.setItem(USER_KEY, JSON.stringify(newUser));
-      setTokenState(newToken);
-      setUser(newUser);
+      if (error) throw error;
+      if (!data.session || !data.user) {
+        throw new Error(
+          'Kayıt tamamlandı. Giriş yapmadan önce e-posta adresinizi doğrulayın.',
+        );
+      }
+      applySession(data.session);
     },
-    []
+    [applySession],
   );
 
   const logout = useCallback(async () => {
-    await clearAuth();
-  }, []);
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+    applySession(null);
+  }, [applySession]);
 
   const updateUser = useCallback((data: Partial<User>) => {
-    setUser((prev) => (prev ? { ...prev, ...data } : null));
+    setUser((previous) => (previous ? { ...previous, ...data } : null));
   }, []);
 
   return (
@@ -126,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function useAuth(): AuthContextValue {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  return context;
 }

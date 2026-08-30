@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Nexus",
+    "name": "Nexus Premium",
     "slug": "nexus-app",
-    "version": "1.0.1",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon_2.png",
     "scheme": "nexus",
@@ -15,11 +15,12 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.altayhr.nexus"
+      "bundleIdentifier": "com.altayhr.nexus",
+      "newArchEnabled": false
     },
     "android": {
       "package": "com.altayhr.nexus",
-      "versionCode": 2,
+      "versionCode": 4,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon_2.png",
         "backgroundColor": "#0B0B14"
@@ -28,8 +29,12 @@
       "permissions": [
         "android.permission.POST_NOTIFICATIONS",
         "android.permission.VIBRATE",
-        "android.permission.RECEIVE_BOOT_COMPLETED"
-      ]
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA"
+      ],
+      "newArchEnabled": false,
+      "minSdkVersion": 24
     },
     "web": {
       "favicon": "./assets/images/icon_2.png"

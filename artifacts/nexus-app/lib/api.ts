@@ -35,24 +35,48 @@ async function request<T = any>(
   method: string,
   path: string,
   data?: any,
-  isFormData = false
+  isFormData = false,
+  retries = 3
 ): Promise<T> {
   const token = await getToken();
   const headers: Record<string, string> = {};
   if (token) headers['Authorization'] = `Bearer ${token}`;
   if (!isFormData) headers['Content-Type'] = 'application/json';
 
-  const response = await fetch(`${getBaseUrl()}${path}`, {
-    method,
-    headers,
-    body: isFormData ? data : data ? JSON.stringify(data) : undefined,
-  });
+  let lastError: Error | null = null;
 
-  const json = await response.json().catch(() => ({ error: 'Unknown error' }));
-  if (!response.ok) {
-    throw new Error(json.error || `Request failed: ${response.status}`);
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const response = await fetch(`${getBaseUrl()}${path}`, {
+        method,
+        headers,
+        body: isFormData ? data : data ? JSON.stringify(data) : undefined,
+      });
+
+      const json = await response.json().catch(() => ({ error: 'Parse error' }));
+      
+      if (!response.ok) {
+        const errorMsg = json.error || json.message || `Request failed: ${response.status}`;
+        throw new Error(errorMsg);
+      }
+      
+      return json as T;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      // Don't retry on client errors (4xx) except 408, 429
+      if (error instanceof Error && error.message.includes('4') && !error.message.includes('408') && !error.message.includes('429')) {
+        throw error;
+      }
+      
+      // Wait before retry
+      if (attempt < retries - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+      }
+    }
   }
-  return json as T;
+
+  throw lastError || new Error('Request failed after retries');
 }
 
 export const api = {

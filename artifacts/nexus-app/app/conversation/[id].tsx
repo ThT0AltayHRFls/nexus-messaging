@@ -157,6 +157,44 @@ export default function ConversationScreen() {
     }
   };
 
+  const initiateCall = useCallback((type: 'voice' | 'video') => {
+    if (conversation?.type !== 'direct' || !conversation.otherUser) {
+      Alert.alert('Error', 'Calls only work in direct conversations');
+      return;
+    }
+
+    if (!socket) {
+      Alert.alert('Error', 'Not connected to server');
+      return;
+    }
+
+    const callId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Emit call invitation
+    socket.emit('call-invite', {
+      callId,
+      type,
+      from: me?.id,
+      fromName: me?.displayName,
+      to: conversation.otherUser.id,
+      conversationId,
+    });
+
+    Alert.alert(
+      `${type === 'voice' ? 'Sesli' : 'Görüntülü'} Arama`,
+      `${conversation.otherUser.displayName} aranıyor...`,
+      [
+        {
+          text: 'İptal Et',
+          style: 'cancel',
+          onPress: () => {
+            socket.emit('call-cancel', { callId, conversationId });
+          },
+        },
+      ]
+    );
+  }, [conversation, socket, me?.id, me?.displayName, conversationId]);
+
   const handleMsgLongPress = useCallback((item: Message) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const isMine = item.senderId === me?.id;
@@ -171,11 +209,21 @@ export default function ConversationScreen() {
                 try { await api.conversations.deleteMessage(conversationId, item.id); } catch {}
               },
             },
+            {
+              text: 'Delete for Everyone',
+              style: 'destructive' as const,
+              onPress: async () => {
+                try { 
+                  await api.conversations.deleteMessage(conversationId, item.id);
+                  socket?.emit('message-deleted-everywhere', { messageId: item.id, conversationId });
+                } catch {}
+              },
+            },
           ]
         : []),
       { text: 'Cancel', style: 'cancel' },
     ]);
-  }, [me?.id, conversationId]);
+  }, [me?.id, conversationId, socket]);
 
   const title =
     conversation?.type === 'direct'
@@ -253,13 +301,13 @@ export default function ConversationScreen() {
 
         <View style={styles.headerRight}>
           <TouchableOpacity
-            onPress={() => Alert.alert('Voice Call', 'Coming soon')}
+            onPress={() => initiateCall('voice')}
             style={styles.iconBtn}
           >
             <Ionicons name="call-outline" size={22} color={colors.mutedForeground} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => Alert.alert('Video Call', 'Coming soon')}
+            onPress={() => initiateCall('video')}
             style={styles.iconBtn}
           >
             <Ionicons name="videocam-outline" size={22} color={colors.mutedForeground} />
