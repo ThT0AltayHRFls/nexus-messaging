@@ -154,13 +154,12 @@ jobs:
           VERSION_CODE=$((100000 + GITHUB_RUN_NUMBER))
           sed -i -E "s/versionCode [0-9]+/versionCode $VERSION_CODE/" android/app/build.gradle
 
-          node - <<'JSEOF'
-          const fs = require('fs');
-          const file = 'android/app/build.gradle';
-          let content = fs.readFileSync(file, 'utf8');
+          # Expo's generated Gradle file differs between SDK/plugin versions.
+          # Configure the signing extension in a second android closure instead
+          # of relying on a particular generated signingConfigs layout.
+          cat >> android/app/build.gradle <<'GEOF'
 
-          if (!/signingConfigs\s*\{[\s\S]*?release\s*\{/.test(content)) {
-            const signingBlock = `
+          android {
               signingConfigs {
                   release {
                       storeFile file(MYAPP_UPLOAD_STORE_FILE)
@@ -169,45 +168,13 @@ jobs:
                       keyPassword MYAPP_UPLOAD_KEY_PASSWORD
                   }
               }
-          `;
-            const buildTypesIdx = content.indexOf('    buildTypes {');
-            if (buildTypesIdx === -1) {
-              throw new Error('Could not find buildTypes block in generated Gradle file');
-            }
-            content =
-              content.slice(0, buildTypesIdx) +
-              signingBlock +
-              content.slice(buildTypesIdx);
+              buildTypes {
+                  release {
+                      signingConfig signingConfigs.release
+                  }
+              }
           }
-
-          const buildTypesIdx = content.indexOf('    buildTypes {');
-          const releaseIdx = content.indexOf('        release {', buildTypesIdx);
-          if (releaseIdx === -1) {
-            throw new Error('Could not find release block in generated Gradle file');
-          }
-          const releaseEnd = content.indexOf('\n        }', releaseIdx);
-          if (releaseEnd === -1) {
-            throw new Error('Could not find end of release block in generated Gradle file');
-          }
-          let releaseBlock = content.slice(releaseIdx, releaseEnd);
-          if (releaseBlock.includes('signingConfig signingConfigs.')) {
-            releaseBlock = releaseBlock.replace(
-              /signingConfig\s+signingConfigs\.\w+/g,
-              'signingConfig signingConfigs.release',
-            );
-          } else {
-            releaseBlock = releaseBlock.replace(
-              '        release {',
-              '        release {\n            signingConfig signingConfigs.release',
-            );
-          }
-          content =
-            content.slice(0, releaseIdx) +
-            releaseBlock +
-            content.slice(releaseEnd);
-
-          fs.writeFileSync(file, content);
-          JSEOF
+          GEOF
 
           {
             echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=512m"
