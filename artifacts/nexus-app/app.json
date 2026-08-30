@@ -2,7 +2,7 @@
   "expo": {
     "name": "Nexus",
     "slug": "nexus-app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon_2.png",
     "scheme": "nexus",
@@ -19,7 +19,7 @@
     },
     "android": {
       "package": "com.altayhr.nexus",
-      "versionCode": 1,
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon_2.png",
         "backgroundColor": "#0B0B14"

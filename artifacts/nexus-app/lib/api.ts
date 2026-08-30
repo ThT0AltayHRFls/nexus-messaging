@@ -14,7 +14,9 @@ export function getBaseUrl(): string {
       : `https://${normalizedDomain}`;
   }
 
-  return 'http://localhost:5000';
+  throw new Error(
+    'Nexus API URL is not configured. Set EXPO_PUBLIC_API_URL for this build.',
+  );
 }
 
 export async function getToken(): Promise<string | null> {
