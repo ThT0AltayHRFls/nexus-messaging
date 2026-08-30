@@ -106,7 +106,9 @@ jobs:
             # that must install over an earlier APK.
             KEY_ALIAS="nexus"
             STORE_PASSWORD="$(openssl rand -hex 24)"
-            KEY_PASSWORD="$(openssl rand -hex 24)"
+             # The runner's keytool defaults to PKCS12, which requires the
+             # private-key password to match the keystore password.
+             KEY_PASSWORD="$STORE_PASSWORD"
             echo "::add-mask::$STORE_PASSWORD"
             echo "::add-mask::$KEY_PASSWORD"
             keytool -genkeypair \
