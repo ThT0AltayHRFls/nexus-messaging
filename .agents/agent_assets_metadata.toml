@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "OjNVLnpuvxMUFuGrRJoZN"
+uri = "file://artifacts/nexus-app/builds/nexus-premium-v2.0.0-release.apk"
+type = "unspecified"
+title = "Nexus Premium Android APK"
+description = "Verified release APK from GitHub Release v2.0.0-build.11 for com.altayhr.nexus."
+logical_id = "24578717-cea8-4d50-b417-6bf52115b224"
+content_hash = "sha256:4b3f017fe4f3c849cfa9dda34b04d7ea8ebfcd6b1dbec2507ead4bb33983f148"
+size = 99839751
+mtime_ms = 1788130111722
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:d7c7c5e9-41cd-4e6b-991f-2790aa0630c0/24578717-cea8-4d50-b417-6bf52115b224/cd05a368-5e7c-4cd0-8c00-95dd890d9002"
+storage_version_token = "1788130121637363"
+content_type = "application/octet-stream"

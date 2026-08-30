@@ -10,7 +10,6 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from './AuthContext';
-import { api } from '@/lib/api';
 import type { AppNotification } from '@/lib/types';
 
 // Show notifications when app is in foreground too
@@ -111,7 +110,6 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   const markAllRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-    api.notifications.markRead().catch(() => {});
   };
 
   const clearNotification = (id: string) => {
@@ -149,17 +147,9 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         const data = notification.request.content.data as Record<string, any>;
 
         if (actionIdentifier === 'REPLY' && userText && data?.conversationId) {
-          // Reply directly from notification panel
-          try {
-            await api.conversations.sendMessage(Number(data.conversationId), {
-              content: userText,
-              type: 'text',
-            });
-          } catch {}
+          router.push(`/conversation/${data.conversationId}` as any);
         } else if (actionIdentifier === 'LIKE_VIDEO' && data?.videoId) {
-          try {
-            await api.feed.like(Number(data.videoId));
-          } catch {}
+          router.push('/(tabs)/feed' as any);
         } else if (actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER) {
           // Tap on notification body → navigate
           if (data?.conversationId) {
@@ -245,7 +235,6 @@ async function registerForPushNotificationsAsync(): Promise<string | null> {
     // Try to get the Expo push token (best effort)
     const tokenData = await Notifications.getExpoPushTokenAsync().catch(() => null);
     if (tokenData?.data) {
-      await api.notifications.registerToken(tokenData.data, Platform.OS).catch(() => {});
       return tokenData.data;
     }
 
