@@ -22,9 +22,9 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 120
     env:
-      # Set NEXUS_API_URL under Settings → Secrets and variables → Actions
+      # Set NEXUS_API_URL under repository variables when a deployed API is available.
       # or provide api_url when starting this workflow manually.
-      EXPO_PUBLIC_API_URL: ${{ github.event.inputs.api_url || vars.NEXUS_API_URL }}
+      EXPO_PUBLIC_API_URL: http://localhost:5000
 
     steps:
       - name: Validate release configuration
@@ -235,6 +235,8 @@ jobs:
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ env.APP_VERSION }}-build.${{ github.run_number }}
           name: Nexus v${{ env.APP_VERSION }} · Build ${{ github.run_number }}
