@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon_2.png",
     "scheme": "nexus",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "jsEngine": "hermes",
     "runtimeVersion": {
       "policy": "sdkVersion"
