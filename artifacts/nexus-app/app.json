@@ -56,8 +56,6 @@
       "enableDexMultiDex": true,
       "enableShrinking": false,
       "enableMinification": false,
-      "googleServicesFile": null,
-      "googleMapsApiKey": null,
       "ndk": {
         "debugSymbolLevel": "full"
       },
