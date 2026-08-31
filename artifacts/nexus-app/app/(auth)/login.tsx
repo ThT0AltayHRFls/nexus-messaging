@@ -125,7 +125,7 @@ export default function LoginScreen() {
                 </View>
 
                 <View style={styles.inputWrapper}>
-                  <Ionicons name="lock" size={20} color="#00d4ff" style={styles.icon} />
+                  <Ionicons name="lock-closed" size={20} color="#00d4ff" style={styles.icon} />
                   <TextInput
                     placeholder="Şifre"
                     placeholderTextColor="#888"

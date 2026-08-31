@@ -15,15 +15,11 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          animationEnabled: true,
-          cardStyle: { backgroundColor: '#0a0e27' },
         }}
       >
         <Stack.Screen
           name="splash"
-          options={{
-            animationEnabled: false,
-          }}
+          options={{}}
         />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />

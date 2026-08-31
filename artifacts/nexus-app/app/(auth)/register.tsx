@@ -52,7 +52,7 @@ export default function RegisterScreen() {
 
     setIsLoading(true);
     try {
-      await register(email.trim(), username.trim(), password);
+      await register(email.trim(), password, username.trim());
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Alert.alert('Başarı', 'Hesabınız oluşturuldu. Lütfen giriş yapın.');
       router.replace('/(auth)/login');
@@ -120,7 +120,7 @@ export default function RegisterScreen() {
                 </View>
 
                 <View style={styles.inputWrapper}>
-                  <Ionicons name="lock" size={20} color="#00d4ff" style={styles.icon} />
+                  <Ionicons name="lock-closed" size={20} color="#00d4ff" style={styles.icon} />
                   <TextInput
                     placeholder="Şifre"
                     placeholderTextColor="#888"
@@ -140,7 +140,7 @@ export default function RegisterScreen() {
                 </View>
 
                 <View style={styles.inputWrapper}>
-                  <Ionicons name="lock" size={20} color="#00d4ff" style={styles.icon} />
+                  <Ionicons name="lock-closed" size={20} color="#00d4ff" style={styles.icon} />
                   <TextInput
                     placeholder="Şifre Onayla"
                     placeholderTextColor="#888"
