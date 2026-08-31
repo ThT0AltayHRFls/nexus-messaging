@@ -5,13 +5,20 @@ import {
   Animated,
   TouchableOpacity,
   Text,
-  Image,
 } from 'react-native';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function SplashScreen() {
   const fadeAnim = new Animated.Value(0);
+  const player = useVideoPlayer(
+    require('../assets/VID_20260901_012614.mp4'),
+    (videoPlayer) => {
+      videoPlayer.loop = true;
+      videoPlayer.play();
+    },
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -35,10 +42,13 @@ export default function SplashScreen() {
         colors={['#0a0e27', '#1a1f3a', '#0a0e27']}
         style={styles.gradient}
       >
-        <Image
-          source={require('../assets/file_000000000f9c8210952d7769f2906254.png')}
-          style={styles.image}
-          resizeMode="cover"
+        <VideoView
+          player={player}
+          style={styles.video}
+          contentFit="cover"
+          nativeControls={false}
+          allowsFullscreen={false}
+          allowsPictureInPicture={false}
         />
 
         <Animated.View
@@ -65,7 +75,7 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   gradient: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  image: { width: '100%', height: '100%', position: 'absolute', opacity: 0.72 },
+  video: { width: '100%', height: '100%', position: 'absolute', opacity: 0.72 },
   buttonContainer: {
     position: 'absolute',
     bottom: 60,
