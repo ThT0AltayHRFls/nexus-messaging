@@ -14,3 +14,17 @@ mtime_ms = 1788130111722
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:d7c7c5e9-41cd-4e6b-991f-2790aa0630c0/24578717-cea8-4d50-b417-6bf52115b224/cd05a368-5e7c-4cd0-8c00-95dd890d9002"
 storage_version_token = "1788130121637363"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "k_OjSSUkJQssQDYdxoW4m"
+uri = "file://artifacts/nexus-app/releases/nexus-premium-v2.0.0-release.apk"
+type = "unspecified"
+title = "Nexus Premium v2.0.0 Release APK"
+description = "Signed Android APK from GitHub Release v2.0.0-build.14. SHA-256: 0ca76e7a8885239946680587c38c5c188e3d994e0296a316539395de02fe6846."
+logical_id = "6840e036-7ed3-4250-96fa-bb11dfaacc63"
+content_hash = "sha256:0ca76e7a8885239946680587c38c5c188e3d994e0296a316539395de02fe6846"
+size = 100432628
+mtime_ms = 1788192043536
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:d7c7c5e9-41cd-4e6b-991f-2790aa0630c0/6840e036-7ed3-4250-96fa-bb11dfaacc63/c66f9125-6f8d-4ad5-9693-e8efb73563c9"
+storage_version_token = "1788192060588809"
+content_type = "application/octet-stream"

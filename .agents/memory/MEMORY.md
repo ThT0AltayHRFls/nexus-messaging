@@ -1,1 +1,2 @@
 - [Android release signing](android-release-signing.md) — GitHub Actions uses a persistent repository keystore; preserve it for install-over-update compatibility.
+- [Expo Android build quirks](expo-android-build-quirks.md) — omit unused nullable Google config fields; Reanimated 4 requires New Architecture.
