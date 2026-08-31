@@ -1,110 +1,33 @@
-import React, { useEffect } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-  useFonts,
-} from '@expo-google-fonts/inter';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
+import { AuthProvider } from '@/context/AuthContext';
+import { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-import { AuthProvider, useAuth } from '@/context/AuthContext';
-import { NotificationProvider } from '@/context/NotificationContext';
 
-SplashScreen.preventAutoHideAsync();
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { retry: 1, staleTime: 30_000 },
-    mutations: { retry: 0 },
-  },
-});
-
-function RootLayoutNav() {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  useEffect(() => {
-    if (!isLoading) {
-      if (isAuthenticated) {
-        router.replace('/(tabs)');
-      } else {
-        router.replace('/(auth)/login');
-      }
-    }
-  }, [isAuthenticated, isLoading]);
-
-  return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="conversation/[id]"
-        options={{ headerShown: false, animation: 'slide_from_right' }}
-      />
-      <Stack.Screen
-        name="user/[id]"
-        options={{ headerShown: false, animation: 'slide_from_right' }}
-      />
-      <Stack.Screen
-        name="search"
-        options={{ headerShown: false, animation: 'slide_from_bottom' }}
-      />
-      <Stack.Screen
-        name="create-group"
-        options={{ headerShown: false, animation: 'slide_from_bottom' }}
-      />
-      <Stack.Screen
-        name="create-channel"
-        options={{ headerShown: false, animation: 'slide_from_bottom' }}
-      />
-      <Stack.Screen
-        name="new-conversation"
-        options={{ headerShown: false, animation: 'slide_from_bottom' }}
-      />
-      <Stack.Screen
-        name="about"
-        options={{ headerShown: false, animation: 'slide_from_right' }}
-      />
-    </Stack>
-  );
-}
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
-  const [fontsLoaded, fontError] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-  });
-
   useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, fontError]);
-
-  if (!fontsLoaded && !fontError) return null;
+    SplashScreen.hideAsync().catch(() => {});
+  }, []);
 
   return (
-    <SafeAreaProvider>
-      <ErrorBoundary>
-        <QueryClientProvider client={queryClient}>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <KeyboardProvider>
-              <AuthProvider>
-                <NotificationProvider>
-                  <RootLayoutNav />
-                </NotificationProvider>
-              </AuthProvider>
-            </KeyboardProvider>
-          </GestureHandlerRootView>
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </SafeAreaProvider>
+    <AuthProvider>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          animationEnabled: true,
+          cardStyle: { backgroundColor: '#0a0e27' },
+        }}
+      >
+        <Stack.Screen
+          name="splash"
+          options={{
+            animationEnabled: false,
+          }}
+        />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
+      </Stack>
+    </AuthProvider>
   );
 }

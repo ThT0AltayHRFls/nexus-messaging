@@ -4,8 +4,7 @@
     "slug": "nexus-app",
     "version": "2.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon_2.png",
-    "scheme": "nexus",
+    "icon": "./assets/file_000000000f9c8210952d7769f2906254.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "jsEngine": "hermes",
@@ -13,116 +12,66 @@
       "policy": "sdkVersion"
     },
     "splash": {
-      "image": "./assets/images/icon_2.png",
+      "image": "./assets/file_000000000f9c8210952d7769f2906254.png",
       "resizeMode": "contain",
       "backgroundColor": "#0B0B14"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.altayhr.nexus",
       "newArchEnabled": false,
       "requireFullScreen": true,
-      "userInterfaceStyle": "dark"
+      "userInterfaceStyle": "dark",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Fotoğraf ve video çekmek için kamera izni gereklidir",
+        "NSMicrophoneUsageDescription": "Ses kaydı ve çağrılar için mikrofon izni gereklidir",
+        "NSLocationWhenInUseUsageDescription": "Konumunuzu paylaşmak için konum izni gereklidir",
+        "NSPhotoLibraryUsageDescription": "Galeri erişimi için izni gereklidir",
+        "NSPhotoLibraryAddUsageDescription": "Fotoğraf kaydetmek için izni gereklidir"
+      }
     },
     "android": {
-      "package": "com.altayhr.nexus",
-      "versionCode": 5,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon_2.png",
-        "monochromeImage": "./assets/images/icon_2.png",
-        "backgroundColor": "#0B0B14"
+        "foregroundImage": "./assets/file_000000000f9c8210952d7769f2906254.png",
+        "backgroundColor": "#0a0e27"
       },
-      "softwareKeyboardLayoutMode": "pan",
+      "package": "com.altayhr.nexus",
       "permissions": [
-        "android.permission.POST_NOTIFICATIONS",
-        "android.permission.VIBRATE",
-        "android.permission.RECEIVE_BOOT_COMPLETED",
-        "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA",
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO",
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.POST_NOTIFICATIONS",
         "android.permission.INTERNET",
-        "android.permission.ACCESS_NETWORK_STATE",
-        "android.permission.READ_PHONE_STATE",
-        "android.permission.MODIFY_AUDIO_SETTINGS"
-      ],
-      "minSdkVersion": 26,
-      "targetSdkVersion": 35,
-      "compileSdkVersion": 35,
-      "buildToolsVersion": "35.0.0",
-      "enableProguardInReleaseBuilds": true,
-      "enableDexMultiDex": true,
-      "enableShrinking": false,
-      "enableMinification": false,
-      "ndk": {
-        "debugSymbolLevel": "full"
-      },
-      "extraBuildConfig": "android {\n    lintOptions {\n        disable 'MissingTranslation'\n        disable 'ExtraTranslation'\n        disable 'MissingDimensionResource'\n        checkDependencies false\n    }\n    dexOptions {\n        jumboMode true\n        javaMaxHeapSize '4g'\n    }\n    packagingOptions {\n        pickFirst 'lib/x86/libfbjni.so'\n        pickFirst 'lib/x86_64/libfbjni.so'\n        pickFirst 'lib/arm64-v8a/libfbjni.so'\n        pickFirst 'lib/armeabi-v7a/libfbjni.so'\n    }\n}",
-      "hardwareAcceleration": true,
-      "wakelockPermission": false
+        "android.permission.ACCESS_NETWORK_STATE"
+      ]
     },
     "web": {
-      "favicon": "./assets/images/icon_2.png",
-      "bundler": "metro"
+      "favicon": "./assets/file_000000000f9c8210952d7769f2906254.png"
     },
     "plugins": [
       [
-        "expo-router",
+        "expo-notifications",
         {
-          "origin": "https://replit.com/",
-          "asyncRoutes": false
+          "icon": "./assets/file_000000000f9c8210952d7769f2906254.png",
+          "color": "#00d4ff"
         }
-      ],
-      [
-        "expo-font"
-      ],
-      [
-        "expo-web-browser"
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Fotoğraflarınızı görmek ve göndermek için izin gereklidir.",
-          "cameraPermission": "Kamera kullanmak için izin gereklidir.",
-          "microphonePermission": "Ses kaydı için izin gereklidir."
-        }
-      ],
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/images/icon_2.png",
-          "color": "#7C3AED",
-          "defaultChannel": "default",
-          "enableBackgroundRemoteNotifications": true,
-          "androidMode": "default",
-          "androidCollapsedTitle": "Mesajınız var"
-        }
-      ],
-      [
-        "expo-location",
-        {
-          "locationAlwaysAndWhenInUsePermission": "Konumunuzu kullanmak için izin gereklidir.",
-          "locationWhenInUsePermission": "Konumunuzu kullanmak için izin gereklidir.",
-          "isIOS": false
+          "photosPermission": "Galeri erişimi için izni gereklidir",
+          "cameraPermission": "Kamera izni gereklidir",
+          "microphonePermission": "Ses kaydı için mikrofon izni gereklidir"
         }
       ]
     ],
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": false,
-      "baseUrlLogging": true
-    },
-    "facebookAppId": null,
-    "facebookDisplayName": null,
-    "updates": {
-      "enabled": false,
-      "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ]
+    "scheme": "nexus"
   }
 }

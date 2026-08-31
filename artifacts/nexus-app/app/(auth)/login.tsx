@@ -10,6 +10,8 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  ImageBackground,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
@@ -34,14 +36,15 @@ export default function LoginScreen() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const [googleRequest, , promptGoogleAsync] = Google.useIdTokenAuthRequest({
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID || 'YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com',
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     scopes: ['profile', 'email'],
   });
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert('Hata', 'Lütfen tüm alanları doldurun');
       return;
     }
     setIsLoading(true);
@@ -51,7 +54,7 @@ export default function LoginScreen() {
       router.replace('/(tabs)');
     } catch (err: any) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Login Failed', err.message || 'Invalid credentials');
+      Alert.alert('Giriş Başarısız', err.message || 'Geçersiz kimlik bilgileri');
     } finally {
       setIsLoading(false);
     }
@@ -59,10 +62,7 @@ export default function LoginScreen() {
 
   const handleGoogleLogin = useCallback(async () => {
     if (!googleRequest) {
-      Alert.alert(
-        'Google girişi hazır değil',
-        'Google Client ID ayarları henüz uygulamaya yüklenmedi. Lütfen uygulamayı yeniden açın.',
-      );
+      Alert.alert('Dikkat', 'Google Client ID doğru yapılandırılmamış');
       return;
     }
 
@@ -71,305 +71,167 @@ export default function LoginScreen() {
       const result = await promptGoogleAsync();
       if (result.type === 'success') {
         const idToken = result.params?.id_token;
-        if (!idToken) {
-          throw new Error('Google kimlik belirteci alınamadı.');
-        }
+        if (!idToken) throw new Error('Token alınamadı');
         await loginWithGoogle(idToken);
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         router.replace('/(tabs)');
-      } else if (result.type !== 'cancel' && result.type !== 'dismiss') {
-        throw new Error('Google ile giriş tamamlanamadı.');
       }
     } catch (err: any) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Google Giriş Hatası', err?.message || 'Lütfen tekrar deneyin.');
+      Alert.alert('Google Hatası', err?.message || 'Lütfen tekrar deneyin');
     } finally {
       setIsGoogleLoading(false);
     }
   }, [googleRequest, loginWithGoogle, promptGoogleAsync]);
 
   return (
-    <LinearGradient
-      colors={[colors.background, colors.secondary, colors.background]}
-      style={styles.gradient}
+    <ImageBackground
+      source={require('../../assets/1000067245.png')}
+      style={styles.background}
     >
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      <LinearGradient
+        colors={['rgba(10,14,39,0.3)', 'rgba(26,31,58,0.4)']}
+        style={styles.gradient}
       >
-        <ScrollView
-          contentContainerStyle={[
-            styles.container,
-            {
-              paddingTop: insets.top + 60,
-              paddingBottom: insets.bottom + 40,
-            },
-          ]}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
+        <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          {/* Logo */}
-          <View style={styles.logoContainer}>
-            <LinearGradient
-              colors={[colors.primary, colors.accent]}
-              style={[styles.logoCircle, { borderRadius: colors.radius * 2 }]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <Ionicons name="diamond" size={44} color="#FFF" />
-            </LinearGradient>
-            <Text style={[styles.logoText, { color: colors.foreground }]}>Nexus</Text>
-            <Text style={[styles.tagline, { color: colors.mutedForeground }]}>
-              Premium Messaging
-            </Text>
-          </View>
-
-          {/* Form */}
-          <View style={styles.form}>
-            <Text style={[styles.label, { color: colors.mutedForeground }]}>EMAIL</Text>
-            <View
-              style={[
-                styles.inputWrapper,
-                {
-                  backgroundColor: colors.input,
-                  borderColor: colors.border,
-                  borderRadius: colors.radius,
-                },
-              ]}
-            >
-              <Ionicons name="at" size={18} color={colors.mutedForeground} style={styles.inputIcon} />
-              <TextInput
-                style={[styles.input, { color: colors.foreground }]}
-                placeholder="you@example.com"
-                placeholderTextColor={colors.mutedForeground}
-                value={username}
-                onChangeText={setUsername}
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="email-address"
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
+              <Image
+                source={require('../../assets/file_000000000f9c8210952d7769f2906254.png')}
+                style={styles.logo}
+                resizeMode="contain"
               />
-            </View>
 
-            <Text style={[styles.label, { color: colors.mutedForeground, marginTop: 16 }]}>PASSWORD</Text>
-            <View
-              style={[
-                styles.inputWrapper,
-                {
-                  backgroundColor: colors.input,
-                  borderColor: colors.border,
-                  borderRadius: colors.radius,
-                },
-              ]}
-            >
-              <Ionicons name="lock-closed" size={18} color={colors.mutedForeground} style={styles.inputIcon} />
-              <TextInput
-                style={[styles.input, { color: colors.foreground }]}
-                placeholder="Enter your password"
-                placeholderTextColor={colors.mutedForeground}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-              />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
-                <Ionicons
-                  name={showPassword ? 'eye-off' : 'eye'}
-                  size={20}
-                  color={colors.mutedForeground}
+              <Text style={styles.title}>NEXUS MESSAGE</Text>
+              <Text style={styles.subtitle}>Güvenli Mesajlaşma</Text>
+
+              <View style={styles.formContainer}>
+                <View style={styles.inputWrapper}>
+                  <Ionicons name="person" size={20} color="#00d4ff" style={styles.icon} />
+                  <TextInput
+                    placeholder="Kullanıcı Adı"
+                    placeholderTextColor="#888"
+                    value={username}
+                    onChangeText={setUsername}
+                    style={styles.input}
+                    editable={!isLoading}
+                  />
+                </View>
+
+                <View style={styles.inputWrapper}>
+                  <Ionicons name="lock" size={20} color="#00d4ff" style={styles.icon} />
+                  <TextInput
+                    placeholder="Şifre"
+                    placeholderTextColor="#888"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                    style={styles.input}
+                    editable={!isLoading}
+                  />
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                    <Ionicons
+                      name={showPassword ? 'eye' : 'eye-off'}
+                      size={20}
+                      color="#00d4ff"
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity
+                  style={[styles.loginButton, isLoading && styles.disabledButton]}
+                  onPress={handleLogin}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.buttonText}>GİRİŞ YAP</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.divider}>
+                <View style={styles.line} />
+                <Text style={styles.dividerText}>VEYA</Text>
+                <View style={styles.line} />
+              </View>
+
+              <TouchableOpacity
+                style={[styles.googleButton, isGoogleLoading && styles.disabledButton]}
+                onPress={handleGoogleLogin}
+                disabled={isGoogleLoading || !googleRequest}
+              >
+                <Image
+                  source={require('../../assets/1000067247.png')}
+                  style={styles.googleLogo}
+                  resizeMode="contain"
                 />
               </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
+                <Text style={styles.registerText}>
+                  Hesabınız yok mu? <Text style={styles.registerLink}>Kayıt Olun</Text>
+                </Text>
+              </TouchableOpacity>
             </View>
-
-            <TouchableOpacity
-              style={[
-                styles.loginBtn,
-                { borderRadius: colors.radius, opacity: isLoading ? 0.7 : 1 },
-              ]}
-              onPress={handleLogin}
-              disabled={isLoading}
-              activeOpacity={0.85}
-            >
-              <LinearGradient
-                colors={[colors.primary, colors.accent]}
-                style={[styles.loginBtnGradient, { borderRadius: colors.radius }]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-              >
-                {isLoading ? (
-                  <ActivityIndicator color="#FFF" />
-                ) : (
-                  <Text style={styles.loginBtnText}>Sign In</Text>
-                )}
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <View style={styles.dividerRow}>
-              <View style={[styles.divider, { backgroundColor: colors.border }]} />
-              <Text style={[styles.dividerText, { color: colors.mutedForeground }]}>OR</Text>
-              <View style={[styles.divider, { backgroundColor: colors.border }]} />
-            </View>
-
-            <TouchableOpacity
-              style={[
-                styles.googleBtn,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.input,
-                  borderRadius: colors.radius,
-                  opacity: isLoading || isGoogleLoading ? 0.7 : 1,
-                },
-              ]}
-              onPress={handleGoogleLogin}
-              disabled={isLoading || isGoogleLoading}
-              activeOpacity={0.85}
-            >
-              {isGoogleLoading ? (
-                <ActivityIndicator color={colors.foreground} />
-              ) : (
-                <>
-                  <Ionicons name="logo-google" size={19} color={colors.foreground} />
-                  <Text style={[styles.googleBtnText, { color: colors.foreground }]}>
-                    Continue with Google
-                  </Text>
-                </>
-              )}
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.footer}>
-            <Text style={[styles.footerText, { color: colors.mutedForeground }]}>
-              Don't have an account?{' '}
-            </Text>
-            <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-              <Text style={[styles.footerLink, { color: colors.primary }]}>Register</Text>
-            </TouchableOpacity>
-          </View>
-
-          <Text style={[styles.dev, { color: colors.mutedForeground }]}>by AltayHR</Text>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </LinearGradient>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </LinearGradient>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: { flex: 1 },
   gradient: { flex: 1 },
   flex: { flex: 1 },
-  container: {
-    flexGrow: 1,
-    paddingHorizontal: 28,
-    alignItems: 'center',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 48,
-  },
-  logoCircle: {
-    width: 88,
-    height: 88,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  logoText: {
-    fontSize: 36,
-    fontFamily: 'Inter_700Bold',
-    letterSpacing: -1,
-  },
-  tagline: {
-    fontSize: 14,
-    fontFamily: 'Inter_400Regular',
-    marginTop: 4,
-    letterSpacing: 0.5,
-  },
-  form: {
-    width: '100%',
-    maxWidth: 380,
-  },
-  label: {
-    fontSize: 11,
-    fontFamily: 'Inter_600SemiBold',
-    letterSpacing: 1.2,
-    marginBottom: 8,
-  },
+  scrollContent: { flexGrow: 1 },
+  container: { flex: 1, padding: 20, justifyContent: 'center' },
+  logo: { width: 120, height: 120, alignSelf: 'center', marginBottom: 20 },
+  title: { fontSize: 28, fontWeight: 'bold', color: '#fff', textAlign: 'center', marginBottom: 5 },
+  subtitle: { fontSize: 14, color: '#00d4ff', textAlign: 'center', marginBottom: 30 },
+  formContainer: { marginBottom: 30 },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 12,
     borderWidth: 1,
-    paddingHorizontal: 14,
-    height: 52,
+    borderColor: '#00d4ff',
+    paddingHorizontal: 15,
+    marginBottom: 15,
+    height: 50,
   },
-  inputIcon: {
-    marginRight: 10,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    fontFamily: 'Inter_400Regular',
-  },
-  eyeBtn: {
-    padding: 4,
-  },
-  loginBtn: {
-    marginTop: 28,
-    overflow: 'hidden',
-  },
-  loginBtnGradient: {
-    height: 54,
-    alignItems: 'center',
+  icon: { marginRight: 10 },
+  input: { flex: 1, color: '#fff', fontSize: 16 },
+  loginButton: {
+    backgroundColor: '#00d4ff',
+    borderRadius: 12,
+    height: 50,
     justifyContent: 'center',
-  },
-  loginBtnText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontFamily: 'Inter_600SemiBold',
-    letterSpacing: 0.5,
-  },
-  dividerRow: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginTop: 24,
+    marginTop: 10,
   },
-  divider: {
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    fontSize: 11,
-    fontFamily: 'Inter_600SemiBold',
-    letterSpacing: 1,
-  },
-  googleBtn: {
-    height: 54,
-    borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+  googleButton: {
+    height: 60,
+    borderRadius: 12,
     justifyContent: 'center',
-    gap: 10,
-    marginTop: 16,
-  },
-  googleBtnText: {
-    fontSize: 15,
-    fontFamily: 'Inter_600SemiBold',
-  },
-  footer: {
-    flexDirection: 'row',
-    marginTop: 32,
     alignItems: 'center',
+    backgroundColor: 'transparent',
   },
-  footerText: {
-    fontSize: 14,
-    fontFamily: 'Inter_400Regular',
-  },
-  footerLink: {
-    fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
-  },
-  dev: {
-    fontSize: 12,
-    fontFamily: 'Inter_400Regular',
-    marginTop: 40,
-    letterSpacing: 1,
-  },
+  googleLogo: { width: '100%', height: '100%' },
+  buttonText: { color: '#000', fontSize: 16, fontWeight: '600' },
+  disabledButton: { opacity: 0.5 },
+  divider: { flexDirection: 'row', alignItems: 'center', marginVertical: 20 },
+  line: { flex: 1, height: 1, backgroundColor: '#00d4ff' },
+  dividerText: { color: '#00d4ff', marginHorizontal: 10, fontWeight: '600' },
+  registerText: { color: '#888', textAlign: 'center', fontSize: 14, marginTop: 20 },
+  registerLink: { color: '#00d4ff', fontWeight: '600' },
 });

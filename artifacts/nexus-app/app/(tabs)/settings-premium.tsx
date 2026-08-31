@@ -1,3 +1,4 @@
+import { ImageBackground } from 'react-native';
 import React, { useState } from 'react';
 import {
   View,

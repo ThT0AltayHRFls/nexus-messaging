@@ -1,237 +1,153 @@
-# Nexus Messaging
+# 🔐 Nexus Message - Secure Messaging App
 
-Nexus Messaging, konuşmaları, toplulukları, hikâyeleri ve video akışını tek bir
-mobil deneyimde bir araya getiren modern bir mesajlaşma uygulamasıdır. Uygulama
-Android için imzalı APK olarak üretilebilir ve her `main` gönderiminde GitHub
-Release olarak yayınlanabilir.
+Güvenli ve hızlı mesajlaşma uygulaması.
 
-## Nexus nedir?
+## ✨ Özellikler
 
-Nexus; yalnızca mesaj göndermek yerine insanların birbirleriyle farklı şekillerde
-bağlantı kurmasını amaçlar. Bire bir sohbetlerden grup konuşmalarına, herkese açık
-kanallardan kısa ve uzun videolara kadar günlük iletişimin temel parçalarını tek
-bir yerde tutar.
+✅ **Google OAuth Girişi** - Error 400 düzeltildi
+✅ **Gmail Kayıt/Giriş** - Connection hatası çözüldü
+✅ **İzin Sistemi** - Kamera, Konum, Mikrofon, Bildirim, Galeri, Depolama
+✅ **Otomatik Yedekleme** - Mesajları cihazda güvenli yedekle
+✅ **Splash Screen** - 3 saniye video oynatma
+✅ **Modern UI** - Neon design, dark mode
+✅ **Gerçek-Zamanlı Mesajlaşma** - Supabase entegrasyonu
 
-Uygulama şu deneyimleri sunar:
-
-- Bire bir konuşmalar ve gerçek zamanlı mesajlaşma
-- Grup sohbetleri ve herkese açık kanallar
-- Hikâyeler ve topluluk güncellemeleri
-- Kısa ve uzun video akışı
-- Profil fotoğrafı, biyografi ve durum mesajı
-- Tepkiler, yorumlar, yanıtlar ve sabitleme
-- Kişi, grup ve kanal araması
-- Bildirim tercihleri ve gizlilik ayarları
-- Fotoğraf yükleme ve medya paylaşımı
-- Nexus’un tüm özelliklerini açıklayan “About Nexus” ekranı
-
-## Proje yapısı
-
-```text
-artifacts/
-├── nexus-app/                 # Expo Router mobil uygulaması
-│   ├── app/                   # Giriş, sekmeler ve uygulama ekranları
-│   ├── components/            # Avatar, mesaj, video ve bilgi widget'ları
-│   ├── context/               # Kimlik doğrulama, socket ve bildirim durumu
-│   ├── lib/api.ts             # Mobil istemci API katmanı
-│   └── app.json               # Expo ve Android uygulama yapılandırması
-└── api-server/                # Express API ve Socket.IO sunucusu
-
-lib/
-├── db/                        # Drizzle ORM şeması
-├── api-spec/                  # OpenAPI sözleşmesi
-├── api-client-react/          # Üretilen React API istemcisi
-└── api-zod/                   # Üretilen Zod tipleri
-
-.github/workflows/
-└── build-android.yml          # Otomatik imzalı APK ve GitHub Release akışı
-```
-
-## Kullanılan teknolojiler
-
-- Expo SDK 54 ve React Native 0.81
-- Expo Router ile dosya tabanlı mobil yönlendirme
-- Express 5 ve Socket.IO
-- PostgreSQL ve Drizzle ORM
-- TypeScript
-- pnpm workspace
-- GitHub Actions
-- Android Gradle Plugin ve JDK 17
-
-## Yerel geliştirme
+## 🚀 Başlangıç
 
 ### Gereksinimler
+- Node.js 18+
+- npm veya yarn
+- Expo CLI: `npm install -g expo-cli`
 
-- Node.js 24
-- pnpm 10
-- PostgreSQL
-- Expo CLI bağımlılıkları
-
-Bağımlılıkları kurun:
+### Kurulum
 
 ```bash
-pnpm install
+cd nexus-fixed/artifacts/nexus-app
+
+# Bağımlılıkları kur
+npm install
+
+# .env dosyası oluştur
+cp .env.example .env
+
+# Değerleri doldur (Google OAuth, Supabase vb)
+nano .env
 ```
 
-Veritabanı bağlantısını sağlayın:
+### Uygulamayı Çalıştır
 
 ```bash
-export DATABASE_URL="postgresql://..."
+# Development
+npm start
+
+# Android
+npm run android
+
+# iOS
+npm run ios
+
+# Web
+npm run web
 ```
 
-API sunucusunu çalıştırın:
+## 🔑 Environment Variables
+
+`.env` dosyasını aşağıdaki bilgilerle doldurun:
+
+```
+EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=...
+EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=...
+EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=...
+```
+
+## 📱 Ekranlar
+
+- **Splash** - Video oynatma (3 saniye)
+- **Login** - Google OAuth + Email/Şifre
+- **Register** - Hesap oluşturma
+- **Permissions** - İzin istek sistemi
+- **Messages** - Mesajlaşma ana ekranı
+- **Settings** - Ayarlar ve profil
+
+## 🛡️ Güvenlik
+
+- ✅ Şifreli yedekleme
+- ✅ Secure AsyncStorage
+- ✅ Firebase Auth entegrasyonu
+- ✅ HTTPS only
+- ✅ End-to-End Encryption (e2ee)
+
+## 📂 Klasör Yapısı
+
+```
+nexus-app/
+├── app/
+│   ├── (auth)/       # Login, Register, Permissions
+│   ├── (tabs)/       # Main app tabs
+│   └── splash.tsx    # Splash screen
+├── components/       # Reusable components
+├── context/          # Auth, Theme context
+├── lib/
+│   └── backup.ts     # Backup sistem
+├── assets/           # Görseller, videolar
+└── package.json      # Bağımlılıklar
+```
+
+## 🐛 Hata Giderme
+
+### Google OAuth Error 400
+→ Client ID'leri `.env` dosyasında kontrol edin
+
+### Connection Error
+→ Supabase URL ve key'i doğru yapılandırın
+
+### İzin Hataları
+→ Android: `app.json` permissions kontrol edin
+→ iOS: `app.json` Info.plist değerleri kontrol edin
+
+## 📝 Yedekleme
+
+Uygulamada otomatik yedekleme açılıysa:
+- Cihazda: `${FileSystem.documentDirectory}nexus_backups/`
+- Format: JSON
+- Otomatik: Her mesajlaşmada
+
+Yedekten Geri Yükleme:
+```typescript
+import { BackupService } from '@/lib/backup';
+const backup = await BackupService.restoreBackup();
+```
+
+## 🚀 Build
 
 ```bash
-pnpm --filter @workspace/api-server run dev
+# Android APK
+expo build:android
+
+# iOS IPA
+expo build:ios
+
+# Web
+expo export:web
 ```
 
-Mobil uygulama geliştirme sunucusunu başlatın:
+## 📊 Versyon
 
-```bash
-pnpm --filter @workspace/nexus-app run dev
-```
+- **v2.0.0** - Full rewrite
+- Video splash screen
+- Real permissions system
+- Gerçek backup sistemi
 
-Uygulama, geliştirme ortamında API adresini şu sırayla seçer:
+## 👨‍💻 Geliştirme
 
-1. `EXPO_PUBLIC_API_URL`
-2. `EXPO_PUBLIC_DOMAIN`
-3. Yerel geliştirme için `http://localhost:5000`
+Yazı: Muhammed
+Teknoloji: React Native, Expo, TypeScript
 
-Gerçek cihaz kullanırken `localhost` cihazın kendisini ifade eder. Bu nedenle
-telefonla geliştirme yaparken erişilebilir bir API adresi mutlaka
-`EXPO_PUBLIC_API_URL` olarak verilmelidir.
+## 📞 Destek
 
-## Android uygulama kimliği ve ikon
+Hata veya soru için: balinmuhammed722@gmail.com
 
-- Uygulama adı: `Nexus`
-- Android paket adı: `com.altayhr.nexus`
-- Expo slug: `nexus-app`
-- Başlangıç sürümü: `1.0.0`
-- Ana uygulama ikonu: `artifacts/nexus-app/assets/images/icon_2.png`
-- Splash ekranı ve Android adaptive icon aynı Nexus görselini kullanır.
+---
 
-İkon 1024 × 1024 PNG olarak depoda bulunur ve Android adaptive icon arka planı
-Nexus’un koyu uzay temasına göre ayarlanmıştır. Native `android/` klasörü kaynak
-koda eklenmez; GitHub Actions her derlemede `expo prebuild` ile temiz biçimde
-yeniden üretir. Böylece yerel native dosyaların eski Expo ayarlarıyla çakışması
-önlenir.
-
-## GitHub Actions ile APK üretimi
-
-`.github/workflows/build-android.yml` dosyası:
-
-1. `main` dalındaki kodu alır.
-2. Node.js, pnpm, JDK 17 ve Android SDK'yı kurar.
-3. Bağımlılıkları kilitli sürümlerle yükler.
-4. Expo Android projesini temiz biçimde üretir.
-5. Release signing yapılandırmasını uygular.
-6. GitHub run numarasından artan bir Android `versionCode` verir.
-7. Release APK'yı derler.
-8. APK'yı Actions artifact olarak saklar.
-9. `v1.0.0-build.<run-number>` formatında kararlı GitHub Release oluşturur.
-10. APK'yı Release dosyası olarak ekler.
-
-Workflow hem `main` dalına yapılan push ile otomatik çalışır hem de GitHub
-Actions ekranından elle başlatılabilir.
-
-### API adresini tanımlama
-
-APK'nın gerçek bir telefonda çalışabilmesi için GitHub deposunda şu repository
-variable tanımlanmalıdır:
-
-```text
-NEXUS_API_URL=https://api.example.com
-```
-
-GitHub yolu:
-
-```text
-Settings → Secrets and variables → Actions → Variables → New repository variable
-```
-
-Elle workflow başlatırken `api_url` alanı verilirse repository variable'ın
-yerine o değer kullanılır. API adresi verilmezse workflow bilerek durur; böylece
-çalışmayan ve yanlışlıkla `localhost` adresine bağlanan bir APK yayınlanmaz.
-
-### APK imzalama
-
-İlk release'te gerekli signing anahtarı yoksa workflow rastgele ve güçlü
-parolalarla yeni bir keystore üretir. Bu, kullanıcının ayrıca bilgisayarında
-keytool çalıştırmasına gerek bırakmaz.
-
-Android güncellemelerinin daha önceki APK'nın üzerine kurulabilmesi için sonraki
-release'lerde aynı imza kimliği korunmalıdır. Bunun için GitHub Actions
-Secrets bölümüne aşağıdaki dört değeri ekleyin:
-
-```text
-NEXUS_KEYSTORE_BASE64
-NEXUS_KEY_ALIAS
-NEXUS_KEYSTORE_PASSWORD
-NEXUS_KEY_PASSWORD
-```
-
-`NEXUS_KEYSTORE_BASE64`, keystore dosyasının Base64 karşılığıdır. Keystore
-parolalarını kaynak koda, README'ye, workflow çıktısına veya sohbet mesajlarına
-yazmayın. Secrets bulunmadığında workflow yine APK üretir, ancak o çalıştırmaya
-özel yeni bir imza anahtarı kullandığı için bu APK sonraki imzalı sürümlerle
-aynı uygulamanın üzerine güncellenemeyebilir.
-
-### Release dosyasını indirme
-
-Workflow tamamlandığında:
-
-1. GitHub deposunda **Releases** sekmesini açın.
-2. En yeni `Nexus v...` release'ini seçin.
-3. Release içindeki `.apk` dosyasını indirin.
-4. Android cihazda kurulum izni istenirse yalnızca güvendiğiniz kaynaktan
-   yüklemeye izin verin.
-
-Her workflow run'ında ayrıca 30 gün saklanan bir Actions artifact'i bulunur.
-
-## Kalite kontrolleri
-
-Tüm workspace tiplerini kontrol etmek için:
-
-```bash
-pnpm run typecheck
-```
-
-Sadece mobil uygulamayı kontrol etmek için:
-
-```bash
-pnpm --filter @workspace/nexus-app run typecheck
-```
-
-API sözleşmesinde değişiklik yaptıktan sonra istemci ve Zod çıktısını yenileyin:
-
-```bash
-pnpm --filter @workspace/api-spec run codegen
-```
-
-## Güvenlik notları
-
-- GitHub tokenleri kaynak koda veya git remote URL'sine yazılmamalıdır.
-- GitHub Actions tokeni yalnızca Actions çalışma ortamında kullanılır.
-- Keystore parolaları GitHub Secrets içinde tutulmalıdır.
-- Yüklenen medya dosyaları kaynak koda commit edilmemelidir.
-- Release workflow'u API adresi yoksa fail-fast davranır.
-- Kullanıcı parolaları mobil cihazda yalnızca oturum tokeniyle birlikte güvenli
-  uygulama depolamasında tutulur; token loglara yazılmaz.
-
-## Sürüm yayınlama özeti
-
-```text
-Kod değişikliği → main push → Actions build → signed APK
-→ Actions artifact → GitHub Release → APK indirilebilir
-```
-
-Yeni bir sürüm yayınlamadan önce `app.json` içindeki `expo.version` değerini
-artırın. Workflow her çalıştırmada Android `versionCode` değerini otomatik
-olarak yükseltir; bu, Google Play veya cihaz üzerindeki güncelleme sıralaması
-için gereklidir.
-
-## Lisans ve geliştirici
-
-Nexus Messaging, AltayHR tarafından geliştirilmektedir. Proje içindeki
-üçüncü taraf paketlerin lisansları kendi paket tanımları ve npm kayıtları
-üzerinden takip edilmelidir.
+**Built with 💙 by Nexus Team**
