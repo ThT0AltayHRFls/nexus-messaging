@@ -16,6 +16,7 @@ interface AuthContextValue {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: (idToken: string) => Promise<void>;
   register: (email: string, password: string, displayName: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => void;
@@ -96,6 +97,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [applySession],
   );
 
+  const loginWithGoogle = useCallback(
+    async (idToken: string) => {
+      const tokenValue = idToken.trim();
+      if (!tokenValue) {
+        throw new Error('Google kimlik doğrulama belirteci alınamadı.');
+      }
+
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: tokenValue,
+      });
+
+      if (error) throw error;
+      if (!data.session || !data.user) {
+        throw new Error('Google ile oturum açılamadı.');
+      }
+
+      applySession(data.session);
+    },
+    [applySession],
+  );
+
   const register = useCallback(
     async (email: string, password: string, displayName: string) => {
       const { data, error } = await supabase.auth.signUp({
@@ -137,6 +160,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         isAuthenticated: !!user && !!token,
         login,
+        loginWithGoogle,
         register,
         logout,
         updateUser,

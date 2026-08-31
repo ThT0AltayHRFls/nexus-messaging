@@ -19,6 +19,8 @@ jobs:
     env:
       EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID: ${{ secrets.GOOGLE_ANDROID_CLIENT_ID }}
+      EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
 
     steps:
       - name: Checkout code
@@ -49,6 +51,14 @@ jobs:
           fi
           if [[ ! "$EXPO_PUBLIC_SUPABASE_URL" =~ ^https:// ]]; then
             echo "::error::SUPABASE_URL must start with https://."
+            exit 1
+          fi
+          if [[ -z "${EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID:-}" ]]; then
+            echo "::error::The GOOGLE_ANDROID_CLIENT_ID repository secret is required."
+            exit 1
+          fi
+          if [[ -z "${EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID:-}" ]]; then
+            echo "::error::The GOOGLE_WEB_CLIENT_ID repository secret is required."
             exit 1
           fi
 

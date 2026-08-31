@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -13,20 +13,31 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useAuth } from '@/context/AuthContext';
 import { useColors } from '@/hooks/useColors';
 
+WebBrowser.maybeCompleteAuthSession();
+
 export default function LoginScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  const [googleRequest, , promptGoogleAsync] = Google.useIdTokenAuthRequest({
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    scopes: ['profile', 'email'],
+  });
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
@@ -45,6 +56,37 @@ export default function LoginScreen() {
       setIsLoading(false);
     }
   };
+
+  const handleGoogleLogin = useCallback(async () => {
+    if (!googleRequest) {
+      Alert.alert(
+        'Google girişi hazır değil',
+        'Google Client ID ayarları henüz uygulamaya yüklenmedi. Lütfen uygulamayı yeniden açın.',
+      );
+      return;
+    }
+
+    setIsGoogleLoading(true);
+    try {
+      const result = await promptGoogleAsync();
+      if (result.type === 'success') {
+        const idToken = result.params?.id_token;
+        if (!idToken) {
+          throw new Error('Google kimlik belirteci alınamadı.');
+        }
+        await loginWithGoogle(idToken);
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        router.replace('/(tabs)');
+      } else if (result.type !== 'cancel' && result.type !== 'dismiss') {
+        throw new Error('Google ile giriş tamamlanamadı.');
+      }
+    } catch (err: any) {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Google Giriş Hatası', err?.message || 'Lütfen tekrar deneyin.');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  }, [googleRequest, loginWithGoogle, promptGoogleAsync]);
 
   return (
     <LinearGradient
@@ -160,6 +202,38 @@ export default function LoginScreen() {
                 )}
               </LinearGradient>
             </TouchableOpacity>
+
+            <View style={styles.dividerRow}>
+              <View style={[styles.divider, { backgroundColor: colors.border }]} />
+              <Text style={[styles.dividerText, { color: colors.mutedForeground }]}>OR</Text>
+              <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            </View>
+
+            <TouchableOpacity
+              style={[
+                styles.googleBtn,
+                {
+                  borderColor: colors.border,
+                  backgroundColor: colors.input,
+                  borderRadius: colors.radius,
+                  opacity: isLoading || isGoogleLoading ? 0.7 : 1,
+                },
+              ]}
+              onPress={handleGoogleLogin}
+              disabled={isLoading || isGoogleLoading}
+              activeOpacity={0.85}
+            >
+              {isGoogleLoading ? (
+                <ActivityIndicator color={colors.foreground} />
+              ) : (
+                <>
+                  <Ionicons name="logo-google" size={19} color={colors.foreground} />
+                  <Text style={[styles.googleBtnText, { color: colors.foreground }]}>
+                    Continue with Google
+                  </Text>
+                </>
+              )}
+            </TouchableOpacity>
           </View>
 
           <View style={styles.footer}>
@@ -250,6 +324,34 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Inter_600SemiBold',
     letterSpacing: 0.5,
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 24,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+  },
+  dividerText: {
+    fontSize: 11,
+    fontFamily: 'Inter_600SemiBold',
+    letterSpacing: 1,
+  },
+  googleBtn: {
+    height: 54,
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    marginTop: 16,
+  },
+  googleBtnText: {
+    fontSize: 15,
+    fontFamily: 'Inter_600SemiBold',
   },
   footer: {
     flexDirection: 'row',

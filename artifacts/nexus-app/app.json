@@ -7,7 +7,11 @@
     "icon": "./assets/images/icon_2.png",
     "scheme": "nexus",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
+    "jsEngine": "hermes",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
     "splash": {
       "image": "./assets/images/icon_2.png",
       "resizeMode": "contain",
@@ -16,13 +20,16 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.altayhr.nexus",
-      "newArchEnabled": false
+      "newArchEnabled": false,
+      "requireFullScreen": true,
+      "userInterfaceStyle": "dark"
     },
     "android": {
       "package": "com.altayhr.nexus",
-      "versionCode": 4,
+      "versionCode": 5,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon_2.png",
+        "monochromeImage": "./assets/images/icon_2.png",
         "backgroundColor": "#0B0B14"
       },
       "softwareKeyboardLayoutMode": "pan",
@@ -31,26 +38,57 @@
         "android.permission.VIBRATE",
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.RECORD_AUDIO",
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.READ_PHONE_STATE",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
-      "minSdkVersion": 24
+      "minSdkVersion": 26,
+      "targetSdkVersion": 35,
+      "compileSdkVersion": 35,
+      "buildToolsVersion": "35.0.0",
+      "enableProguardInReleaseBuilds": true,
+      "enableDexMultiDex": true,
+      "enableShrinking": false,
+      "enableMinification": false,
+      "googleServicesFile": null,
+      "googleMapsApiKey": null,
+      "ndk": {
+        "debugSymbolLevel": "full"
+      },
+      "extraBuildConfig": "android {\n    lintOptions {\n        disable 'MissingTranslation'\n        disable 'ExtraTranslation'\n        disable 'MissingDimensionResource'\n        checkDependencies false\n    }\n    dexOptions {\n        jumboMode true\n        javaMaxHeapSize '4g'\n    }\n    packagingOptions {\n        pickFirst 'lib/x86/libfbjni.so'\n        pickFirst 'lib/x86_64/libfbjni.so'\n        pickFirst 'lib/arm64-v8a/libfbjni.so'\n        pickFirst 'lib/armeabi-v7a/libfbjni.so'\n    }\n}",
+      "hardwareAcceleration": true,
+      "wakelockPermission": false
     },
     "web": {
-      "favicon": "./assets/images/icon_2.png"
+      "favicon": "./assets/images/icon_2.png",
+      "bundler": "metro"
     },
     "plugins": [
       [
         "expo-router",
         {
-          "origin": "https://replit.com/"
+          "origin": "https://replit.com/",
+          "asyncRoutes": false
         }
       ],
-      "expo-font",
-      "expo-web-browser",
+      [
+        "expo-font"
+      ],
+      [
+        "expo-web-browser"
+      ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow Nexus to access your photos to send images."
+          "photosPermission": "Fotoğraflarınızı görmek ve göndermek için izin gereklidir.",
+          "cameraPermission": "Kamera kullanmak için izin gereklidir.",
+          "microphonePermission": "Ses kaydı için izin gereklidir."
         }
       ],
       [
@@ -59,13 +97,34 @@
           "icon": "./assets/images/icon_2.png",
           "color": "#7C3AED",
           "defaultChannel": "default",
-          "enableBackgroundRemoteNotifications": false
+          "enableBackgroundRemoteNotifications": true,
+          "androidMode": "default",
+          "androidCollapsedTitle": "Mesajınız var"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Konumunuzu kullanmak için izin gereklidir.",
+          "locationWhenInUsePermission": "Konumunuzu kullanmak için izin gereklidir.",
+          "isIOS": false
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
-      "reactCompiler": false
-    }
+      "reactCompiler": false,
+      "baseUrlLogging": true
+    },
+    "facebookAppId": null,
+    "facebookDisplayName": null,
+    "updates": {
+      "enabled": false,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ]
   }
 }
